@@ -112,9 +112,30 @@ function create_form_cities($region_id,$province_id,$cities_list,$weight) {
 
 
 function locazione_form_alter(&$form, $form_state, $form_id) {
-//echo $form_id;
+echo $form_id;
+if ($form_id == 'user register' OR $form_id == 'profile_node_form') {
+	drupal_set_title(t('Registrazione utente'));
+}
+else if ($form_id == 'user_pass') {
+	drupal_set_title(t('Recupero credenziali'));
+}
 
  if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
+
+$form['dati_anagrafici'] = array(
+  '#value' => t('<div class="etichette">Dati anagrafici</div>'),
+  '#weight' => ('-99'),
+);
+
+$form['dati_mandataria'] = array(
+  '#value' => t('<div class="etichette">Mandataria</div>'),
+  '#weight' => ('-9'),
+);
+
+$form['credenziali_accesso'] = array(
+  '#value' => t('<div class="etichette">Credenziali di accesso</div>'),
+  '#weight' => ('0'),
+);
 
       // This is our form ID.
 
@@ -123,7 +144,12 @@ function locazione_form_alter(&$form, $form_state, $form_id) {
 //$form['submit2'] = $form['submit'];
 $form['submit']['#weight'] = 99; 
 
-ctools_include('dependent');
+
+
+     
+
+
+/*ctools_include('dependent');
 
 $regions = array (
     'sardegna' => t('Sardegna'),
@@ -158,12 +184,13 @@ foreach ($regions as $region_id => $region_name) {
 	
 	}
 	
-}
+}*/
 
 
 
 //print_r($form);
 //die;
+//break;
 
 }
 
