@@ -1,0 +1,277 @@
+<?php
+  /**
+   * Implementation of hook_form_alter().
+   *
+   * The function is named modulename_form_alter.
+   */
+  /*function locazione_form_alter(&$form, $form_state, $form_id) {
+    // Normally a switch is used because you may want to alter more than
+    // one form and it is easy to add a new case for each form.
+    switch ($form_id) {
+      // This is our form ID.
+      case 'page_node_form':
+        // Our kickin' mods go here.
+
+	$form['regione'] = array(
+            '#type' => 'select',
+            '#title' => t('Regione'),
+            '#weight' => -99,
+	    '#default_value' => variable_get('feed_item_length','teaser'),
+            '#options' => array(
+              'lombardia' => t('Lombardia'),
+	      'sardegna' => t('Sardegna'),            
+  	     ),
+        );
+        $form['#submit'][] = 'locazione_submit';
+        //$form['#submit'][] = 'locazione_validate';
+	
+	// fine delle istruzioni
+      break;
+    }	
+  }
+
+
+  function locazione_submit($form, &$form_state) {    
+	$regione = $form_state['values']['regione'];
+	//dprint_r($form_state);
+
+	//form_set_value( array('#parents' => array('values','field_prova','0','values')), 'tacca',$form_state);
+	form_set_value( array('#parents' => array('field_prova','0','value')), 'tacca',$form_state);
+     
+  } */
+
+
+
+function create_form_regions($region_id,$weight) { 
+
+$my_form = array (
+  '#type' => 'select',
+  '#title' => t('Regione'),
+  '#weight' => '-8.993963',
+  '#options' => array (
+    'sardegna' => t('Sardegna'),
+    'lombardia' => t('Lombardia'),
+  ),
+  '#default_value' => $regione_default_value,
+);
+
+return $my_form;
+
+}
+
+
+function create_form_provinces($region_id,$provinces_list,$weight) {
+
+        $options = array();
+	
+	foreach ($provinces_list as $province) {
+		$options["$province"]=$province;
+	}
+      
+	$my_form = array (
+	  '#type' => 'select',
+	  '#title' => t('Province '.$region_id),
+	  '#options' => $options,
+	  '#weight' => -8.993962,
+	  '#default_value' => $dummy,
+
+	  // 2. This ensures that the element will be processed by ctools dependent
+	  '#process' => array('ctools_dependent_process'),
+
+	  // 3. This instructs ctools_dependent which other elements this
+	  //     should depend on. It has the following format:
+	  //     #dependency => array('id-of-element-to-depend-on' => array('any_value', 'will', 'trigger', 'me'))
+	  '#dependency' => array('edit-regione' => array($region_id)),
+	);
+
+  return $my_form;
+}
+
+function create_form_cities($region_id,$province_id,$cities_list,$weight) {
+
+	$options = array();
+	foreach ($cities_list as $city) {
+		$options["$city"] = $city;
+	}
+	
+	$my_form = array (
+	  '#type' => 'select',
+	  '#title' => t('Comuni '.$province),
+	  '#options' => $options,	
+	  '#weight' => -8.993961,  
+	  //'#fieldset => multistep-group_mandataria,
+	  '#default_value' => $dummy_comune,	  
+	  '#process' => array('ctools_dependent_process'),
+	  '#dependency_count' => 2,
+ 	  '#dependency' => array('edit-province-'.$region_id => array($province_id), 'edit-regione' => array($region_id)),
+	  //'#dependency' => array('edit-province-lombardia' => array('milano'), 'edit-regione' => array('lombardia'))
+	);
+
+  return $my_form;
+}
+
+
+function locazione_form_alter(&$form, $form_state, $form_id) {
+//echo $form_id;
+
+ if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
+
+      // This is our form ID.
+
+     // case 'user_register':
+
+//$form['submit2'] = $form['submit'];
+$form['submit']['#weight'] = 99; 
+
+ctools_include('dependent');
+
+$regions = array (
+    'sardegna' => t('Sardegna'),
+    'lombardia' => t('Lombardia')
+  );
+
+$form['regione']=create_form_regions($regions,$weight);
+
+
+$province=array(
+	'sardegna' => array (
+    		'cagliari' => array('cagliari','quartu','monserrato'),
+    		'sassari' =>  array('sassari','ossi','tissi'),
+  		),
+	'lombardia' => array (
+    		'milano' => array('milano','monza','piacenza'),
+    		'mantova' => array('mantova','poggibonzi')
+  		)
+	);
+
+
+foreach ($regions as $region_id => $region_name) {
+	$form_name="province_".$region_id;
+	//query per popolare $provinces_from_db
+	$provinces_from_db=array_keys ($province["$region_id"]);
+	$form[$form_name]=create_form_provinces($region_id,$provinces_from_db,$weight);
+	foreach($provinces_from_db as $province_id) {
+		//query per popolare $cities_from_db
+		$cities_list=$province["$region_id"]["$province_id"];
+		$form_name='comuni_'.$province_id;
+		$form[$form_name]=create_form_cities($region_id,$province_id,$cities_list,$weight);		
+	
+	}
+	
+}
+
+
+
+//print_r($form);
+//die;
+
+}
+
+}
+
+/*
+function locazione_form_alter_ori(&$form, $form_state, $form_id) {
+
+ switch ($form_id) {
+      // This is our form ID.
+      case 'page_node_form':
+
+ctools_include('dependent');
+
+$form['regione'] = array (
+  '#type' => 'select',
+  '#title' => t('Regione'),
+  '#options' => array (
+    'sardegna' => t('Sardegna'),
+    'lombardia' => t('Lombardia'),
+  ),
+  '#default_value' => $regione_default_value,
+);
+
+$form['province_sardegna'] = array (
+  '#type' => 'select',
+  '#title' => t('Province Sardegna'),
+  '#options' => array (
+    'cagliari' => t('Cagliari'),
+    'sassari' => t('Sassari'),
+  ),
+  '#default_value' => $province_sardegna_default_value,
+
+  // 2. This ensures that the element will be processed by ctools dependent
+  '#process' => array('ctools_dependent_process'),
+
+  // 3. This instructs ctools_dependent which other elements this
+  //     should depend on. It has the following format:
+  //     #dependency => array('id-of-element-to-depend-on' => array('any_value', 'will', 'trigger', 'me'))
+  '#dependency' => array('edit-regione' => array('sardegna')),
+);
+
+$form['province_lombardia'] = array (
+  '#type' => 'select',
+  '#title' => t('Province Lombardia'),
+  '#options' => array (
+    'milano' => t('Milano'),
+    'mantova' => t('Mantova'),
+  ),
+  '#default_value' => $province_lombardia_default_value,
+
+  '#process' => array('ctools_dependent_process'),
+
+  '#dependency' => array('edit-regione' => array('lombardia')),
+);
+
+$form['comuni_milano'] = array (
+  '#type' => 'select',
+  '#title' => t('Comune'),
+  '#options' => array (
+    'milano' => t('Milano'),
+    'linate' => t('Linate'),
+    //...and so on
+  ),
+  '#default_value' => $comuni_milano_default_value,
+  // And likewise
+  '#process' => array('ctools_dependent_process'),
+  '#dependency_count' => 2,
+  '#dependency' => array('edit-province-lombardia' => array('milano'), 'edit-regione' => array('lombardia'))
+);
+
+
+$form['comuni_cagliari'] = array (
+  '#type' => 'select',
+  '#title' => t('Comune'),
+  '#options' => array (
+    'cagliari' => t('Cagliari'),
+    'monserrato' => t('Monserrato'),
+    //...and so on
+  ),
+  '#default_value' => $comuni_cagliari_default_value,
+  // And likewise
+  '#process' => array('ctools_dependent_process'),
+  '#dependency_count' => 2,
+  '#dependency' => array('edit-province-sardegna' => array('cagliari'), 'edit-regione' => array('sardegna'))
+);
+
+
+$form['comuni_sassari'] = array (
+  '#type' => 'select',
+  '#title' => t('Comune'),
+  '#options' => array (
+    'sassari' => t('Sassari'),
+    'ossi' => t('Ossi'),
+    //...and so on
+  ),
+  '#default_value' => $comuni_sassari_default_value,
+  // And likewise
+  '#process' => array('ctools_dependent_process'),
+  '#dependency_count' => 2,
+  '#dependency' => array('edit-province-sardegna' => array('sassari'), 'edit-regione' => array('sardegna'))
+);
+
+
+
+
+}
+
+}
+ */
+?>
