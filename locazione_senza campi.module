@@ -42,22 +42,16 @@
 
 
 
-function create_form_regions($regions,$weight) { 
-	$options = array();
-	foreach ($regions as $regione) {
-		$options[$regione['regione_id']] = $regione['regione_nome'];
-	}
+function create_form_regions($region_id,$weight) { 
 
-	
-
-	$my_form = array (
+$my_form = array (
   '#type' => 'select',
   '#title' => t('Regione'),
   '#weight' => '-8.993963',
-  /*'#options' => array (
+  '#options' => array (
     'sardegna' => t('Sardegna'),
-    'lombardia' => t('Lombardia'),*/
-  '#options' => $options,
+    'lombardia' => t('Lombardia'),
+  ),
   '#default_value' => $regione_default_value,
 );
 
@@ -65,17 +59,18 @@ return $my_form;
 
 }
 
-function create_form_provinces($regione_id, $regione_nome,$province_lista,$weight) {
+
+function create_form_provinces($region_id,$provinces_list,$weight) {
 
         $options = array();
 	
-	foreach ($province_lista as $province) {
-		$options[$province['provincia_id']]= $province['provincia_nome'];
+	foreach ($provinces_list as $province) {
+		$options["$province"]=$province;
 	}
       
 	$my_form = array (
 	  '#type' => 'select',
-	  '#title' => t('Province '.$regione_nome),
+	  '#title' => t('Province '.$region_id),
 	  '#options' => $options,
 	  '#weight' => -8.993962,
 	  '#default_value' => $dummy,
@@ -86,7 +81,7 @@ function create_form_provinces($regione_id, $regione_nome,$province_lista,$weigh
 	  // 3. This instructs ctools_dependent which other elements this
 	  //     should depend on. It has the following format:
 	  //     #dependency => array('id-of-element-to-depend-on' => array('any_value', 'will', 'trigger', 'me'))
-	  '#dependency' => array('edit-regione' => array($regione_id)),
+	  '#dependency' => array('edit-regione' => array($region_id)),
 	);
 
   return $my_form;
@@ -95,8 +90,8 @@ function create_form_provinces($regione_id, $regione_nome,$province_lista,$weigh
 function create_form_cities($region_id,$province_id,$cities_list,$weight) {
 
 	$options = array();
-	foreach ($cities_list as $citta) {
-		$options[$citta['comune_id']] = $citta['comune_nome'];
+	foreach ($cities_list as $city) {
+		$options["$city"] = $city;
 	}
 	
 	$my_form = array (
@@ -108,7 +103,7 @@ function create_form_cities($region_id,$province_id,$cities_list,$weight) {
 	  '#default_value' => $dummy_comune,	  
 	  '#process' => array('ctools_dependent_process'),
 	  '#dependency_count' => 2,
- 	  '#dependency' => array('edit-provincia-'.$region_id => array($province_id), 'edit-regione' => array($region_id)),
+ 	  '#dependency' => array('edit-province-'.$region_id => array($province_id), 'edit-regione' => array($region_id)),
 	  //'#dependency' => array('edit-province-lombardia' => array('milano'), 'edit-regione' => array('lombardia'))
 	);
 
@@ -178,38 +173,32 @@ if ($form_id == 'user_register') {
 }
 
 
-// prima c'erano 2 if
- if ($form_id == 'user_register') { 
+
+ if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
 
       // This is our form ID.
 
      // case 'user_register':
 
 //$form['submit2'] = $form['submit'];
-$form['submit']['#weight'] = 99;   
+$form['submit']['#weight'] = 99; 
 
-ctools_include('dependent');
 
-//include("lista.php");
 
-/*$regions = array (
+     
+
+
+/*ctools_include('dependent');
+
+$regions = array (
     'sardegna' => t('Sardegna'),
     'lombardia' => t('Lombardia')
-  );*/
+  );
 
-$sql = "SELECT regione_id, regione_nome FROM regioni ORDER BY regione_nome";
-$prendi_regioni = db_query($sql);
-
-$regions = array();
-
-while ($regioni = db_fetch_array($prendi_regioni)) {
-	$regions[] = $regioni;	
-}
-
-$form['regione'] = create_form_regions($regions,$weight);
+$form['regione']=create_form_regions($regions,$weight);
 
 
-/*$province=array(
+$province=array(
 	'sardegna' => array (
     		'cagliari' => array('cagliari','quartu','monserrato'),
     		'sassari' =>  array('sassari','ossi','tissi'),
@@ -218,41 +207,23 @@ $form['regione'] = create_form_regions($regions,$weight);
     		'milano' => array('milano','monza','piacenza'),
     		'mantova' => array('mantova','poggibonzi')
   		)
-	);*/
+	);
 
-foreach ($regions as $regione) {
-	$form_name = "provincia_".$regione['regione_id'];
-	//query per popolare $provinces_from_db	
 
-	$sql = "SELECT provincia_id, provincia_nome FROM province WHERE regione_id = $regione[regione_id] ORDER BY provincia_nome";
-	$prendi_province = db_query($sql);
-	while ($province = db_fetch_array($prendi_province)) {
-		$province_lista[] = $province;	
-	}  
-
-	//$provinces_from_db=array_keys ($province["$region_id"]);
-
-	$form[$form_name] = create_form_provinces($regione['regione_id'],$regione['regione_nome'],$province_lista,$weight);
-	
-	foreach($province_lista as $province) {
+foreach ($regions as $region_id => $region_name) {
+	$form_name="province_".$region_id;
+	//query per popolare $provinces_from_db
+	$provinces_from_db=array_keys ($province["$region_id"]);
+	$form[$form_name]=create_form_provinces($region_id,$provinces_from_db,$weight);
+	foreach($provinces_from_db as $province_id) {
 		//query per popolare $cities_from_db
-		
-		$sql = "SELECT comune_id, comune_nome FROM comuni WHERE provincia_id = $province[provincia_id]";
-		$prendi_comuni = db_query($sql);
-		
-		while ($comuni = db_fetch_array($prendi_comuni)) {
-			$comuni_lista[] = $comuni;	} 
-
-		//$cities_list=$province["$region_id"]["$province_id"];
-		$form_name='comuni_'.$province['provincia_id'];
-		$form[$form_name]=create_form_cities($regione['regione_id'],$province['provincia_id'],$comuni_lista,$weight);	
-		unset($comuni_lista);	
+		$cities_list=$province["$region_id"]["$province_id"];
+		$form_name='comuni_'.$province_id;
+		$form[$form_name]=create_form_cities($region_id,$province_id,$cities_list,$weight);		
 	
 	}
-	unset($province_lista);
-
 	
-}
+}*/
 
 
 
