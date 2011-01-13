@@ -112,30 +112,69 @@ function create_form_cities($region_id,$province_id,$cities_list,$weight) {
 
 
 function locazione_form_alter(&$form, $form_state, $form_id) {
-echo $form_id;
-if ($form_id == 'user register' OR $form_id == 'profile_node_form') {
+//echo $form_id;
+if ($form_id == 'user register') {
+	drupal_set_title(t('Registrazione utente')); 
+}
+
+if ($form_id == 'profile_node_form') {
 	drupal_set_title(t('Registrazione utente'));
 }
-else if ($form_id == 'user_pass') {
+
+if ($form_id == 'user_pass') {
 	drupal_set_title(t('Recupero credenziali'));
 }
 
+if ($form_id == 'user_register') { /*
+	$form['dati_anagrafici'] = array(
+  	'#value' => t('<div class="etichette">Dati anagrafici</div>'),
+  	'#weight' => ('-99'),);
+
+	$form['dati_mandataria'] = array(
+  	'#value' => t('<div class="etichette">Mandataria</div>'),
+  	'#weight' => ('-8'),);
+
+	$form['credenziali_accesso'] = array(
+  	'#value' => t('<div class="etichette">Credenziali di accesso</div>'),
+  	'#weight' => ('0'),);*/
+}
+
+// solo quando si modifica utente
+if ($form_id == 'profile_node_form' AND $form_id !== 'user_register') { 
+	$form['aa'] = array(
+  	'#value' => t('<div class="etichette">Dati anagrafici</div>'),
+  	'#weight' => ('-99'),);
+
+	/*$form['ab'] = array(
+  	'#value' => t('<div class="etichette">Mandataria</div>'),
+  	'#weight' => ('7'),);*/
+
+	/*if ($form_id == 'user register') { 
+		$form['ac'] = array(
+  		'#value' => t('<div class="etichette">Credenziali di accesso</div>'),
+  		'#weight' => ('18'),);}*/
+}
+
+// quando si crea utente
+if ($form_id == 'user_register') { 
+	$form['dati'] = array(
+  	'#value' => t('<div class="etichette">Dati anagrafici</div>'),
+  	'#weight' => ('-100'),);
+
+	/*$form['manda'] = array(
+  	'#value' => t('<div class="etichette">Mandataria</div>'),
+  	'#weight' => ('-9'),);*/
+
+	$form['credenziali'] = array(
+  	'#value' => t('<div class="etichette">Credenziali di accesso</div>'),
+  	'#weight' => ('0'),);
+
+	
+}
+
+
+
  if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
-
-$form['dati_anagrafici'] = array(
-  '#value' => t('<div class="etichette">Dati anagrafici</div>'),
-  '#weight' => ('-99'),
-);
-
-$form['dati_mandataria'] = array(
-  '#value' => t('<div class="etichette">Mandataria</div>'),
-  '#weight' => ('-9'),
-);
-
-$form['credenziali_accesso'] = array(
-  '#value' => t('<div class="etichette">Credenziali di accesso</div>'),
-  '#weight' => ('0'),
-);
 
       // This is our form ID.
 
