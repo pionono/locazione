@@ -121,7 +121,7 @@ return $my_form;
 
 function locazione_form_alter(&$form, $form_state, $form_id) {
 //echo $form_id;
-if ($form_id == 'user_register') {
+/*if ($form_id == 'user_register') {
 	drupal_set_title(t('Registrazione utente')); 
 }
 
@@ -129,8 +129,11 @@ if ($form_id == 'profile_node_form') {
 	drupal_set_title(t('Modifica profilo'));
 }
 
+
 if ($form_id == 'user_pass') {
 	drupal_set_title(t('Recupero credenziali'));
+}*/
+
 }
 
 /*if ($form_id == 'user_register') { /*
@@ -277,4 +280,4 @@ foreach ($regions as $regione) {
 
 }*/
 
-?>
+
