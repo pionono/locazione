@@ -33,19 +33,27 @@
 
 */
 
-/*function locazione_submit($form, &$form_state) {   
-	die; 
-	$regione = $form_state['values']['regione'];
-	print_r($form_state);
+function locazione_submit($form, &$form_state) {   
+	//echo "sergio";
+	//die; 
+	//echo "sergio: $form_state['field_nome']['0']['value']<p>";
+	//$regione = $form_state['values']['regione'];
+	//print_r($form_state);
 
 	//form_set_value( array('#parents' => array('values','field_prova','0','values')), 'tacca',$form_state);
-	form_set_value( array('#parents' => array('field_prova','0','value')), 'tacca',$form_state);     
+	//print_r($form_state);
+	//print($form_state['regione']);
+	//print_r($form_state);
+	//echo $form_state['regione_sergio']['0']['value'];
+	//die;
+	//echo $regione;
+	//form_set_value( array('#parents' => array('field_nome','0','value')), $form_state['regione']['0']['value'],$form_state);     
   } 
-*/
 
 
 
-/*function create_form_regions($regions,$weight) { 
+
+function create_form_regions($regions,$weight) { 
 	$options = array();
 	foreach ($regions as $regione) {
 		$options[$regione['regione_id']] = $regione['regione_nome'];
@@ -59,22 +67,23 @@
   '#weight' => '-8.993963',
   /*'#options' => array (
     'sardegna' => t('Sardegna'),
-    'lombardia' => t('Lombardia'),
+    'lombardia' => t('Lombardia'),*/
   '#options' => $options,
-  '#default_value' => $regione_default_value,
+  '#default_value' => $default_value,
 );
 
 return $my_form;
 
-}*/
+}
 
-/*function create_form_provinces($regione_id, $regione_nome,$province_lista,$weight) {
+function create_form_provinces($regione_id, $regione_nome,$province_lista,$weight) {
 
         $options = array();
 	
 	foreach ($province_lista as $province) {
 		$options[$province['provincia_id']]= $province['provincia_nome'];
 	}
+	
       
 	$my_form = array (
 	  '#type' => 'select',
@@ -93,9 +102,9 @@ return $my_form;
 	);
 
   return $my_form;
-}*/
+}
 
-/*function create_form_cities($region_id,$province_id,$cities_list,$weight) {
+function create_form_cities($region_id,$province_id,$cities_list,$weight) {
 
 	$options = array();
 	foreach ($cities_list as $citta) {
@@ -116,82 +125,18 @@ return $my_form;
 	);
 
   return $my_form;
-}*/
+}
 
 
 function locazione_form_alter(&$form, $form_state, $form_id) {
-//echo $form_id;
-/*if ($form_id == 'user_register') {
-	drupal_set_title(t('Registrazione utente')); 
-}
+echo $form_id;
 
-if ($form_id == 'profile_node_form') {
-	drupal_set_title(t('Modifica profilo'));
-}
-
-
-if ($form_id == 'user_pass') {
-	drupal_set_title(t('Recupero credenziali'));
-}*/
-
-}
-
-/*if ($form_id == 'user_register') { /*
-	$form['dati_anagrafici'] = array(
-  	'#value' => t('<div class="etichette">Dati anagrafici</div>'),
-  	'#weight' => ('-99'),);
-
-	$form['dati_mandataria'] = array(
-  	'#value' => t('<div class="etichette">Mandataria</div>'),
-  	'#weight' => ('-8'),);
-
-	$form['credenziali_accesso'] = array(
-  	'#value' => t('<div class="etichette">Credenziali di accesso</div>'),
-  	'#weight' => ('0'),);
-}
-
-// solo quando si modifica utente
-if ($form_id == 'profile_node_form' AND $form_id !== 'user_register') { 
-	$form['aa'] = array(
-  	'#value' => t('<div class="etichette">Dati anagrafici</div>'),
-  	'#weight' => ('-99'),);
-
-	/*$form['ab'] = array(
-  	'#value' => t('<div class="etichette">Mandataria</div>'),
-  	'#weight' => ('7'),);*/
-
-	/*if ($form_id == 'user register') { 
-		$form['ac'] = array(
-  		'#value' => t('<div class="etichette">Credenziali di accesso</div>'),
-  		'#weight' => ('18'),);}
-}
-
-
-if ($form_id == 'user_register') { 
-	$form['dati'] = array(
-  	'#value' => t('<div class="etichette">Dati anagrafici</div>'),
-  	'#weight' => ('-100'),);
-
-	/*$form['manda'] = array(
-  	'#value' => t('<div class="etichette">Mandataria</div>'),
-  	'#weight' => ('-9'),);
-
-	$form['credenziali'] = array(
-  	'#value' => t('<div class="etichette">Credenziali di accesso</div>'),
-  	'#weight' => ('0'),);
-
-	
-}
 
 
 // prima c'erano 2 if
  if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
 
-      // This is our form ID.
-
-     // case 'user_register':
-
-//$form['submit2'] = $form['submit'];
+$form['#submit'][] = 'locazione_submit'; 
 $form['submit']['#weight'] = 99;   
 
 ctools_include('dependent');
@@ -202,19 +147,9 @@ ctools_include('dependent');
     'sardegna' => t('Sardegna'),
     'lombardia' => t('Lombardia')
   );*/
-/*
+
 $sql = "SELECT regione_id, regione_nome FROM regioni ORDER BY regione_nome";
 $prendi_regioni = db_query($sql);
-
-
-$sql1 = "SELECT regione_nome FROM regioni ORDER BY regione_nome";
-$sergio = db_query($sql1);
-while ($sergio1 = db_fetch_array($sergio)) {
-	$stampa = ucfirst(strtolower($sergio1['regione_nome']));
-	echo "$stampa<br>";
-}
-
-
 
 $regions = array();
 
@@ -234,7 +169,7 @@ $form['regione'] = create_form_regions($regions,$weight);
     		'milano' => array('milano','monza','piacenza'),
     		'mantova' => array('mantova','poggibonzi')
   		)
-	);
+	);*/
 
 foreach ($regions as $regione) {
 	$form_name = "provincia_".$regione['regione_id'];
@@ -266,18 +201,12 @@ foreach ($regions as $regione) {
 	
 	}
 	unset($province_lista);
-
 	
-}
+}	
 
-
-
-//print_r($form);
-//die;
-//break;
 
 }
 
-}*/
+}
 
 
