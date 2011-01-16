@@ -6,8 +6,7 @@ function inserisci_valori($form, &$form_state, $id_campi, $nomi_campi) {
 	$prendi_dato = db_query($sql);
 	$dato1 = db_fetch_array($prendi_dato);
 	$dato = db_escape_string($dato1['regione_nome']);
-	form_set_value( array('#parents' => array($nomi_campi['region'],'0','value')), $dato,$form_state);
-	//echo $dato;
+	form_set_value( array('#parents' => array($nomi_campi['region'],'0','value')), $dato,$form_state);	
 
 	$sql = "SELECT provincia_nome FROM province WHERE provincia_id = '$id_campi[province]'";
 	$prendi_dato = db_query($sql);
@@ -22,6 +21,7 @@ function inserisci_valori($form, &$form_state, $id_campi, $nomi_campi) {
 	$dato = db_escape_string($dato1['comune_nome']);
 	form_set_value( array('#parents' => array($nomi_campi['city'],'0','value')), $dato,$form_state); 
 	//echo $dato;
+	echo $dato;
 }
 
 
@@ -69,15 +69,16 @@ function create_form_regions($regions,$weight,$regione_default, $tipologia) {
 		$options[$regione['regione_id']] = $regione['regione_nome'];
 	}
 
-	echo $tipologia['peso_regione']; 
+	//echo $tipologia['peso_regione']; 
 	//die;
 
 	//print $tipologia['def_regione'];die;
 	$my_form = array (
   '#type' => 'select',
   '#title' => "Regione - $tipologia[campo_regione]",
-  '#weight' => $tipologia['peso_regione'],
+  '#attributes' => array('class' => $tipologia['class']),
   '#options' => $options,
+  /*'#required' => TRUE,*/
   '#default_value' => $tipologia['def_regione'], 
 );
 	
@@ -101,7 +102,8 @@ function create_form_provinces($regione_id, $regione_nome,$province_lista,$weigh
 	  '#type' => 'select',
 	  '#title' => "Province $tipologia[campo_provincia]",
 	  '#options' => $options,
-	  '#weight' => $tipologia['peso_provincia'],
+	  '#attributes' => array('class' => $tipologia['class']),
+	/* '#required' => TRUE,*/
 	  '#default_value' => $tipologia['def_provincia'],
 
 	  // 2. This ensures that the element will be processed by ctools dependent
@@ -132,7 +134,8 @@ function create_form_cities($region_id,$province_id,$cities_list,$weight,$comune
 	  '#type' => 'select',
 	  '#title' => t('Comuni '.$tipologia['campo_comune']),
 	  '#options' => $options,	
-	  '#weight' => $tipologia['peso_comune'],  
+	 /* '#required' => TRUE,*/
+	  '#attributes' => array('class' => $tipologia['class']),
 	  '#default_value' => $tipologia['def_comune'],	  	  
 	  '#process' => array('ctools_dependent_process'),
 	  '#dependency_count' => 2,
@@ -150,11 +153,6 @@ function create_form_cities($region_id,$province_id,$cities_list,$weight,$comune
 
 function locazione_crea_campi(&$form, $form_state, $form_id, $tipologia) {
 //print_r($tipologia);die;
-$form['#validate'][] = 'locazione_validate'; 
-$form['submit']['#weight'] = 99;   
-
-
-ctools_include('dependent');
 
 
 
@@ -262,36 +260,14 @@ function locazione_form_alter(&$form, $form_state, $form_id) {
 
 if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
 
+	//print_r($form);
+	echo $form_id;
+	echo $form['field_city1']['0']['#default_value']['value']; 
 
-$form['field_city1'] = array(
-  '#type' => 'hidden',
-);
-$form['field_province1'] = array(
-  '#type' => 'hidden',
-);
-$form['field_region1'] = array(
-  '#type' => 'hidden',
-);
+	$form['#validate'][] = 'locazione_validate'; 
+	$form['submit']['#weight'] = 99;   
 
-$form['field_city2'] = array(
-  '#type' => 'hidden',
-);
-$form['field_province2'] = array(
-  '#type' => 'hidden',
-);
-$form['field_region2'] = array(
-  '#type' => 'hidden',
-);
-
-$form['field_city3'] = array(
-  '#type' => 'hidden',
-);
-$form['field_province3'] = array(
-  '#type' => 'hidden',
-);
-$form['field_region3'] = array(
-  '#type' => 'hidden',
-);
+	ctools_include('dependent');
 	
 	$tipologia = array();
 
@@ -299,30 +275,21 @@ $form['field_region3'] = array(
 	$tipologia['campo_regione'] = "res-regione";
 	$tipologia['campo_provincia'] = "res-provincia";
 	$tipologia['campo_comune'] = "res-comune";
-	$tipologia['peso_regione'] = "-8,8";
-	$tipologia['peso_provincia'] = "-8,9";
-	$tipologia['peso_comune'] = "-8,7";
 	if ($form['field_nome']['0']['#default_value']['value'] !== '') {		
 		$nome_reg = $form['field_region1']['0']['#default_value']['value'];
 		$nome_prov= $form['field_province1']['0']['#default_value']['value'];
 		$nome_com = $form['field_city1']['0']['#default_value']['value'];
+		echo $nome_reg; 
 		$tipologia = crea_campi_default($nome_reg, $nome_prov, $nome_com, $tipologia);		
 	}
-
 	locazione_crea_campi(&$form, $form_state, $form_id, $tipologia);
 
 	// legale
 	
 	unset($tipologia, $nome_reg, $nome_prov, $nome_com);
-	//echo "<p>pausa<p>";
-	//print_r($tipologia);die;
 	$tipologia['campo_regione'] = "leg-regione";
 	$tipologia['campo_provincia'] = "leg-provincia";
-	$tipologia['campo_comune'] = "leg-comune";
-	//$tipologia['peso_regione'] = "1000";
-	//$tipologia['peso_provincia'] = "1001";
-	//$tipologia['peso_comune'] = "1002";	
-
+	$tipologia['campo_comune'] = "leg-comune";	
 	if ($form['field_nome']['0']['#default_value']['value'] !== '') {
 		$nome_reg = $form['field_region2']['0']['#default_value']['value'];
 		$nome_prov = $form['field_province2']['0']['#default_value']['value'];
@@ -336,10 +303,6 @@ $form['field_region3'] = array(
 	$tipologia['campo_regione'] = "op-regione";
 	$tipologia['campo_provincia'] = "op-provincia";
 	$tipologia['campo_comune'] = "op-comune";
-	//$tipologia['peso_regione'] = "1000";
-	//$tipologia['peso_provincia'] = "1001";
-	//$tipologia['peso_comune'] = "1002";
-
 	if ($form['field_nome']['0']['#default_value']['value'] !== '') {
 		$nome_reg = $form['field_region3']['0']['#default_value']['value'];
 		$nome_prov = $form['field_province3']['0']['#default_value']['value'];
@@ -351,5 +314,4 @@ $form['field_region3'] = array(
 }
 
 }
-
 
