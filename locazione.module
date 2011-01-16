@@ -266,7 +266,10 @@ function locazione_form_alter(&$form, $form_state, $form_id) {
 //echo $form['field_nome']['0']['#default_value']['value'];
 
 
-$form['field_city1'] = array(
+
+// prima c'erano 2 if
+ if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
+	$form['field_city1'] = array(
   '#type' => 'hidden',
 );
 $form['field_province1'] = array(
@@ -295,15 +298,7 @@ $form['field_province3'] = array(
 $form['field_region3'] = array(
   '#type' => 'hidden',
 );
-
-
-
-
-
-
-
-// prima c'erano 2 if
- if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
+	
 	$tipologia = array();
 
 	//residenza
