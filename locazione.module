@@ -269,7 +269,9 @@ function locazione_form_alter(&$form, $form_state, $form_id) {
 
 // prima c'erano 2 if
  if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
-	$form['field_city1'] = array(
+
+
+$form['field_city1'] = array(
   '#type' => 'hidden',
 );
 $form['field_province1'] = array(
@@ -282,7 +284,7 @@ $form['field_region1'] = array(
 $form['field_city2'] = array(
   '#type' => 'hidden',
 );
-$form['field_province22'] = array(
+$form['field_province2'] = array(
   '#type' => 'hidden',
 );
 $form['field_region2'] = array(
