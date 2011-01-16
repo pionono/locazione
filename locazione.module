@@ -69,7 +69,8 @@ function create_form_regions($regions,$weight,$regione_default, $tipologia) {
 		$options[$regione['regione_id']] = $regione['regione_nome'];
 	}
 
-	//echo $tipologia['def_regione']; 
+	echo $tipologia['peso_regione']; 
+	//die;
 
 	//print $tipologia['def_regione'];die;
 	$my_form = array (
@@ -258,17 +259,8 @@ function crea_campi_default($nome_reg, $nome_prov, $nome_com, $tipologia) {
 
 
 function locazione_form_alter(&$form, $form_state, $form_id) {
-//echo $form_id;
 
-//print_r($form);
-
-//come prendere un campo cck
-//echo $form['field_nome']['0']['#default_value']['value'];
-
-
-
-// prima c'erano 2 if
- if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
+if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
 
 
 $form['field_city1'] = array(
@@ -307,15 +299,15 @@ $form['field_region3'] = array(
 	$tipologia['campo_regione'] = "res-regione";
 	$tipologia['campo_provincia'] = "res-provincia";
 	$tipologia['campo_comune'] = "res-comune";
-	$tipologia['peso_regione'] = "1000";
-	$tipologia['peso_provincia'] = "1001";
-	$tipologia['peso_comune'] = "1002";
+	$tipologia['peso_regione'] = "-8,8";
+	$tipologia['peso_provincia'] = "-8,9";
+	$tipologia['peso_comune'] = "-8,7";
 	if ($form['field_nome']['0']['#default_value']['value'] !== '') {		
 		$nome_reg = $form['field_region1']['0']['#default_value']['value'];
 		$nome_prov= $form['field_province1']['0']['#default_value']['value'];
 		$nome_com = $form['field_city1']['0']['#default_value']['value'];
 		$tipologia = crea_campi_default($nome_reg, $nome_prov, $nome_com, $tipologia);		
-	}		
+	}
 
 	locazione_crea_campi(&$form, $form_state, $form_id, $tipologia);
 
@@ -327,9 +319,9 @@ $form['field_region3'] = array(
 	$tipologia['campo_regione'] = "leg-regione";
 	$tipologia['campo_provincia'] = "leg-provincia";
 	$tipologia['campo_comune'] = "leg-comune";
-	$tipologia['peso_regione'] = "1000";
-	$tipologia['peso_provincia'] = "1001";
-	$tipologia['peso_comune'] = "1002";	
+	//$tipologia['peso_regione'] = "1000";
+	//$tipologia['peso_provincia'] = "1001";
+	//$tipologia['peso_comune'] = "1002";	
 
 	if ($form['field_nome']['0']['#default_value']['value'] !== '') {
 		$nome_reg = $form['field_region2']['0']['#default_value']['value'];
@@ -344,9 +336,9 @@ $form['field_region3'] = array(
 	$tipologia['campo_regione'] = "op-regione";
 	$tipologia['campo_provincia'] = "op-provincia";
 	$tipologia['campo_comune'] = "op-comune";
-	$tipologia['peso_regione'] = "1000";
-	$tipologia['peso_provincia'] = "1001";
-	$tipologia['peso_comune'] = "1002";
+	//$tipologia['peso_regione'] = "1000";
+	//$tipologia['peso_provincia'] = "1001";
+	//$tipologia['peso_comune'] = "1002";
 
 	if ($form['field_nome']['0']['#default_value']['value'] !== '') {
 		$nome_reg = $form['field_region3']['0']['#default_value']['value'];
