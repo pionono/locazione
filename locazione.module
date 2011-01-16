@@ -261,8 +261,9 @@ function locazione_form_alter(&$form, $form_state, $form_id) {
 if ($form_id == 'user_register' OR $form_id == 'profile_node_form') { 
 
 	//print_r($form);
-	echo $form_id;
-	echo $form['field_city1']['0']['#default_value']['value']; 
+	//print_r($form) ;
+	//echo $form['nid']['value'];
+	//echo $form['field_region1']['0']['#default_value']['value']; 
 
 	$form['#validate'][] = 'locazione_validate'; 
 	$form['submit']['#weight'] = 99;   
